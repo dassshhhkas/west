@@ -18,11 +18,40 @@ export class Duck extends Card {
     }
 }
 
+export class Gatling extends Creature {
+    constructor(name = 'Гатлинг', power = 6) {
+        super(name, power);
+    }
+
+    attack(gameContext, continuation){
+        const taskQueue = new TaskQueue();
+        const { oppositePlayer, position } = gameContext;
+        taskQueue.push(onDone => this.view.showAttack(onDone));
+
+        for (let i = 0; i < oppositePlayer.table.length; i++) {
+            const targetCard = oppositePlayer.table[i];
+            
+            if (!targetCard) continue;
+
+            taskQueue.push(onDone => {
+                this.dealDamageToCreature(2, targetCard, gameContext, onDone);
+            });
+        }
+
+        taskQueue.continueWith(continuation);
+    }
+    
+    dealDamageToPlayer(value, gameContext, continuation) {
+        continuation();
+    }
+}
+
 //Класс Собака
 export class Dog extends Card {
     constructor(name = 'Пес-бандит', power = 3) {
         super(name, power);
     }
+
 }
 
 //Класс Громила 
@@ -110,7 +139,7 @@ function isDog(card) {
     return card instanceof Dog;
 }
 
-// Описание существа
+export // Описание существа
 function getCreatureDescription(card) {
     if (isDuck(card) && isDog(card)) {
         return 'Утка-Собака';
@@ -124,16 +153,13 @@ function getCreatureDescription(card) {
     return 'Существо';
 }
 
-// 🃏 Колоды для проверки 
 const seriffStartDeck = [
     new Duck(),
     new Duck(),
-    new Duck(),
+    new Gatling(),
 ];
-
 const banditStartDeck = [
-    new Lad(),
-    new Lad(),
+    new Trasher(),  
 ];
 
 // Создание игры.
