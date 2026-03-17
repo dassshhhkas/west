@@ -233,6 +233,7 @@ const Card = function () {
     // Нельзя переопределять в наследниках.
     // Можно использовать, если известно какие карты затронуты изменениями.
     Card.prototype.updateView = function () {
+    if (this.view) { // Добавляем проверку
         this.view.updateData({
             name: this.name,
             descriptions: this.getDescriptions(),
@@ -240,7 +241,8 @@ const Card = function () {
             currentPower: this.currentPower,
             maxPower: this.maxPower
         });
-    };
+    }
+};
 
     return Card;
 }();

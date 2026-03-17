@@ -10,6 +10,10 @@ export class Duck extends Creature {
         super(name, power);
     }
 
+    isDuck() {
+        return true;
+    }
+
     quacks() {
         console.log('quack');
     }
@@ -18,6 +22,51 @@ export class Duck extends Creature {
         console.log('float: both;');
     }
 }
+
+export default class Brewer extends Duck {
+    constructor() {
+        super('Пивовар', 2, 'brewer.png');
+    }
+
+    doBeforeAttack(gameContext, continuation) {
+        const taskQueue = new TaskQueue();
+        
+        const { currentPlayer, oppositePlayer } = gameContext;
+     
+        const allCards = currentPlayer.table.concat(oppositePlayer.table);
+    
+        for (let i = 0; i < allCards.length; i++) {
+            const card = allCards[i];
+            
+            if (!card || typeof card.isDuck !== 'function' || !card.isDuck()) continue;
+            
+            taskQueue.push(onDone => {
+                card.maxPower += 1;
+                
+                // Увеличиваем текущую силу на 2
+                card.currentPower = card.currentPower + 2;
+                
+                // Обновляем вид карты
+                card.updateView();
+                
+                // Подсвечиваем карту анимацией исцеления
+                card.view.signalHeal(onDone);
+            });
+        }
+        
+        // Вызываем родительский метод doBeforeAttack после раздачи пива
+        taskQueue.push(onDone => {
+            super.doBeforeAttack(gameContext, onDone);
+        });
+        
+        taskQueue.continueWith(continuation);
+    }
+    
+    isDuck() {
+        return true;
+    }
+}
+            
 
 export class Gatling extends Creature {
     constructor(name = 'Гатлинг', power = 6) {
@@ -156,11 +205,13 @@ function getCreatureDescription(card) {
 
 const seriffStartDeck = [
     new Duck(),
-    new Duck(),
-    new Gatling(),
+    new Brewer(),
 ];
 const banditStartDeck = [
-    new Trasher(),  
+    new Dog(),
+    new Dog(),
+    new Dog(),
+    new Dog(),
 ];
 
 // Создание игры.
