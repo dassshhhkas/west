@@ -25,6 +25,28 @@ export class Dog extends Card {
     }
 }
 
+//Класс Громила 
+export class Trasher extends Dog {
+    constructor() {
+        super('Громила', 5);
+    }
+
+    modifyTakenDamage(value, fromCard, gameContext, continuation) {
+        const reducedDamage = Math.max(value - 1, 0);
+        
+        if (reducedDamage < value) {
+            this.view.signalAbility(() => {
+                continuation(reducedDamage);
+            });
+        } else {
+            continuation(reducedDamage);
+        }
+    }
+    getDescriptions() {
+        return [...super.getDescriptions(), 'Получает на 1 меньше урона'];
+    }
+}
+
 function isDuck(card) {
     return card instanceof Duck;
 }
@@ -33,6 +55,7 @@ function isDog(card) {
     return card instanceof Dog;
 }
 
+// Описание существа
 function getCreatureDescription(card) {
     if (isDuck(card) && isDog(card)) {
         return 'Утка-Собака';
@@ -46,22 +69,22 @@ function getCreatureDescription(card) {
     return 'Существо';
 }
 
-// Колода Шерифа, нижнего игрока.
+// 🃏 Колоды для проверки 
 const seriffStartDeck = [
+    new Duck(),
     new Duck(),
     new Duck(),
     new Duck(),
 ];
 
-// Колода Бандита, верхнего игрока.
 const banditStartDeck = [
-    new Dog(),
+    new Trasher(),  
 ];
 
 // Создание игры.
 const game = new Game(seriffStartDeck, banditStartDeck);
 
-// Глобальный объект, позволяющий управлять скоростью всех анимаций.
+// Управление скоростью анимаций.
 SpeedRate.set(1);
 
 // Запуск игры.
