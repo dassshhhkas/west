@@ -2,9 +2,10 @@ import Card from './Card.js';
 import Game from './Game.js';
 import TaskQueue from './TaskQueue.js';
 import SpeedRate from './SpeedRate.js';
+import Creature from './Creature.js';
 
 //Класс Утка
-export class Duck extends Card {
+export class Duck extends Creature {
     constructor(name = 'Мирная утка', power = 2) {
         super(name, power);
     }
@@ -47,7 +48,7 @@ export class Gatling extends Creature {
 }
 
 //Класс Собака
-export class Dog extends Card {
+export class Dog extends Creature {
     constructor(name = 'Пес-бандит', power = 3) {
         super(name, power);
     }
