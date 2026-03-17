@@ -2,6 +2,7 @@ import Card from './Card.js';
 import Game from './Game.js';
 import TaskQueue from './TaskQueue.js';
 import SpeedRate from './SpeedRate.js';
+import Creature from './Creature.js';
 
 // Отвечает является ли карта уткой.
 export class Duck extends Card {
@@ -41,15 +42,17 @@ function getCreatureDescription(card) {
 
 
 
-// Основа для утки.
-function Duck() {
-    this.quacks = function () { console.log('quack') };
-    this.swims = function () { console.log('float: both;') };
+class Duck extends Creature{
+    quacks(){
+        console.log('quack') 
+    }
+    swims(){
+        console.log('float: both;')
+    }
 }
 
+class Dog extends Creature{
 
-// Основа для собаки.
-function Dog() {
 }
 
 
