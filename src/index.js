@@ -2,11 +2,9 @@ import Card from './Card.js';
 import Game from './Game.js';
 import TaskQueue from './TaskQueue.js';
 import SpeedRate from './SpeedRate.js';
-import Creature from './Creature.js';
 
-
-// Класс Утка
-export class Duck extends Creature {
+//Класс Утка
+export class Duck extends Card {
     constructor(name = 'Мирная утка', power = 2) {
         super(name, power);
     }
@@ -20,8 +18,8 @@ export class Duck extends Creature {
     }
 }
 
-// Класс Собака
-export class Dog extends Creature {
+//Класс Собака
+export class Dog extends Card {
     constructor(name = 'Пес-бандит', power = 3) {
         super(name, power);
     }
@@ -44,11 +42,66 @@ export class Trasher extends Dog {
             continuation(reducedDamage);
         }
     }
+
     getDescriptions() {
         return [...super.getDescriptions(), 'Получает на 1 меньше урона'];
     }
 }
 
+// Класс Браток
+export class Lad extends Dog {
+    constructor(name = 'Браток', power = 2) {
+        super(name, power);
+    }
+
+    static getInGameCount() {
+        return this.inGameCount || 0;
+    }
+
+    static setInGameCount(value) {
+        this.inGameCount = value;
+    }
+
+    static getBonus() {
+        const count = this.getInGameCount();
+        return count * (count + 1) / 2;
+    }
+
+    doAfterComingIntoPlay(gameContext, continuation) {
+        Lad.setInGameCount(Lad.getInGameCount() + 1);
+        super.doAfterComingIntoPlay(gameContext, continuation);
+    }
+
+    doBeforeRemoving(continuation) {
+        Lad.setInGameCount(Lad.getInGameCount() - 1);
+        super.doBeforeRemoving(continuation);
+    }
+
+    modifyDealedDamageToCreature(value, toCard, gameContext, continuation) {
+        const bonus = Lad.getBonus();
+        continuation(value + bonus);
+    }
+
+    modifyTakenDamage(value, fromCard, gameContext, continuation) {
+        const bonus = Lad.getBonus();
+        const reduced = Math.max(value - bonus, 0);
+        continuation(reduced);
+    }
+
+    getDescriptions() {
+        const baseDescriptions = super.getDescriptions();
+        
+
+        if (Lad.prototype.hasOwnProperty('modifyDealedDamageToCreature') || 
+            Lad.prototype.hasOwnProperty('modifyTakenDamage')) {
+            return [...baseDescriptions, 'Чем их больше, тем они сильнее'];
+        }
+        
+        return baseDescriptions;
+    }
+}
+
+// Проверка типа 
 function isDuck(card) {
     return card instanceof Duck;
 }
@@ -57,6 +110,7 @@ function isDog(card) {
     return card instanceof Dog;
 }
 
+// Описание существа
 function getCreatureDescription(card) {
     if (isDuck(card) && isDog(card)) {
         return 'Утка-Собака';
@@ -75,11 +129,11 @@ const seriffStartDeck = [
     new Duck(),
     new Duck(),
     new Duck(),
-    new Duck(),
 ];
 
 const banditStartDeck = [
-    new Trasher(),  
+    new Lad(),
+    new Lad(),
 ];
 
 // Создание игры.
