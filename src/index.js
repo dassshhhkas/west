@@ -4,13 +4,25 @@ import TaskQueue from './TaskQueue.js';
 import SpeedRate from './SpeedRate.js';
 
 // Отвечает является ли карта уткой.
-function isDuck(card) {
-    return card && card.quacks && card.swims;
+export class Duck extends Card {
+    constructor(name = 'Мирная утка', power = 2) {
+        super(name, power);  
+    }
+
+    quacks() {
+        console.log('quack');
+    }
+
+    swims() {
+        console.log('float: both;');
+    }
 }
 
 // Отвечает является ли карта собакой.
-function isDog(card) {
-    return card instanceof Dog;
+export class Dog extends Card {
+    constructor(name = 'Пес-бандит', power = 3){
+        super(name, power);
+    }
 }
 
 // Дает описание существа по схожести с утками и собаками
